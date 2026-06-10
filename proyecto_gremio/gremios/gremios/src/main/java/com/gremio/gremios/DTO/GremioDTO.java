@@ -9,4 +9,5 @@ public class GremioDTO {
     private String nombre;
     private Integer oro;
     private String nombreFaccion;
+    private PartyRegistradaDTO party;
 }

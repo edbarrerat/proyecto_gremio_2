@@ -1,15 +1,10 @@
 package com.gremio.gremios.Model;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +12,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @AllArgsConstructor
@@ -43,18 +37,4 @@ public class Faccion {
     @NotNull (message = "Debes definir si es hostil o no")
     @Column(nullable = false)
     private Boolean hostilidad;
-
-    //------------------------------------------------------
-
-    @OneToMany(mappedBy = "faccion")
-    @ToString.Exclude
-    private List<Mision> misiones;
-
-    @OneToMany(mappedBy = "faccion")
-    @ToString.Exclude
-    private List<Reputacion> reputacion;
-
-    @OneToOne
-    @JoinColumn(name = "gremio_id")
-    private Gremio gremio;
 }

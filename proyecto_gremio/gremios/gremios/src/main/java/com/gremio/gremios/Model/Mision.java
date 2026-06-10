@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -61,22 +59,4 @@ public class Mision {
     @NotNull (message = "Debes definir si esta completa o no")
     @Column(nullable = false)
     private Boolean estado;
-
-    //--------------------------------------------------------
-
-    @ManyToOne
-    @JoinColumn(name = "gremio_id")
-    private Gremio gremio;
-
-    @ManyToOne
-    @JoinColumn(name = "faccion_id")
-    private Faccion faccion;
-
-    @ManyToOne
-    @JoinColumn(name = "rango_id")
-    private Rango rango;
-
-    @ManyToOne
-    @JoinColumn(name = "party_id")
-    private Party party;
 }
