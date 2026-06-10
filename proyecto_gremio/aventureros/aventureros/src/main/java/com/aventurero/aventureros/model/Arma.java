@@ -31,8 +31,8 @@ public class Arma {
     private Integer id;
 
     @NotBlank (message = "El nombre es obligatorio")
-    @Size(min = 3, max = 40, message = "El nombre debe tener entre 3 y 40 caracteres")
-    @Column(nullable = false, length = 40)
+    @Size(min = 3, max = 30, message = "El nombre debe tener entre 3 y 30 caracteres")
+    @Column(nullable = false, length = 30)
     private String nombre;
 
     @NotBlank (message = "La descripcion es obligatoria")

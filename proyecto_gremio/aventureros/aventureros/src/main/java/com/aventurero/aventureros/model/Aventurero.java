@@ -32,8 +32,8 @@ public class Aventurero {
     private Integer id;
 
     @NotBlank (message = "El nombre es obligatorio")
-    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
-    @Column(nullable = false, length = 100)
+    @Size(min = 3, max = 30, message = "El nombre debe tener entre 3 y 30 caracteres")
+    @Column(nullable = false, length = 30)
     private String nombre;
 
     //------------------------------------------------------------

@@ -1,5 +1,9 @@
 package com.aventurero.aventureros.repository;
 
-public class BolsoPocionesRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.aventurero.aventureros.model.BolsoPociones;
+
+public interface BolsoPocionesRepository extends JpaRepository <BolsoPociones, Integer>{
 
 }
