@@ -3,12 +3,17 @@ package com.party.parties.Service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
 
+import com.party.parties.DTO.AventureroExternoDTO;
 import com.party.parties.DTO.PartyDTO;
 import com.party.parties.Model.Party;
 import com.party.parties.Repository.PartyRepository;
+
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Transactional
@@ -17,7 +22,7 @@ public class PartyService {
     private PartyRepository partyRepository;
 
     @Autowired
-    private AventureroRepository aventureroRepository;
+    private WebClient.Builder webClientBuilder;
 
     public List<PartyDTO> obtenerTodas() {
         return partyRepository.findAll().stream()
@@ -64,16 +69,19 @@ public class PartyService {
         PartyDTO dto = new PartyDTO();
         dto.setId(party.getId());
         dto.setNombre(party.getNombre());
-        
-        if (party.getAventureros() != null) {
-            dto.setNombresAventureros(party.getAventureros().stream()
-                                    .map(Aventurero::getNombre)
-                                    .toList());
-        } else {
-            dto.setNombresAventureros(new ArrayList<>());
-        }
-        
+        try {
+            AventureroExternoDTO nombreRecuperado = webClientBuilder.build()
+                .get()
+                .uri("http://localhost:8081/api/v1/aventureros/buscar-por-aventurero/" + party.getId())
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty()) // importante
+                .bodyToMono(AventureroExternoDTO.class)
+                .block();
+            dto.setNombresAventureros(nombreRecuperado);
+        } catch (Exception e) {  
+            dto.setNombresAventureros(null); 
+        } 
         return dto;
     }
-
+    
 }
