@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.gremio.gremios.DTO.GremioDTO;
+import com.gremio.gremios.DTO.PartyRegistradaDTO;
 import com.gremio.gremios.Model.Faccion;
 import com.gremio.gremios.Model.Gremio;
 import com.gremio.gremios.Model.Mision;
@@ -19,6 +21,9 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class GremioService {
     
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     @Autowired
     private GremioRepository gremioRepository;
 
@@ -63,7 +68,21 @@ public class GremioService {
         dto.setId(gremio.getId());
         dto.setNombre(gremio.getNombre());
         dto.setOro(gremio.getOro());
+        try {
+            PartyRegistradaDTO party = webClientBuilder.build()
+                .get()
+                .uri("http://localhost:8082/api/v1/sables/buscar-por-gremio/" + gremio.getId())
+                .retrieve()
+                .bodyToMono(PartyRegistradaDTO.class)
+                .block();
+
+            dto.setParty(party);
+            
+        } catch (Exception e) {
+            dto.setParty(null);
+        }
         return dto;
+    }
     }
 
     public String añadirPartyAGremio(Integer gremioId, Integer partyId) {

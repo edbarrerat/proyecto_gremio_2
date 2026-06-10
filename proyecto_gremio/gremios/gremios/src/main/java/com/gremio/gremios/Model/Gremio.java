@@ -1,14 +1,10 @@
 package com.gremio.gremios.Model;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -18,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @AllArgsConstructor
@@ -42,19 +37,4 @@ public class Gremio {
     @Max(value = 999999999, message = "La cantidad de oro maxima es 999999999")
     @Column(nullable = false)
     private Integer oro = 1;
-
-    //--------------------------------------------------------
-
-    @OneToMany(mappedBy = "gremio")
-    @ToString.Exclude
-    private List<Mision> misiones;
-
-    @OneToOne(mappedBy = "gremio")
-    @ToString.Exclude
-    private Faccion faccion;
-
-    @OneToMany(mappedBy = "gremio")
-    @ToString.Exclude
-    private List<Party> parties;
-    
 }
