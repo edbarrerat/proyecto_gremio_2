@@ -32,7 +32,7 @@ public class Party {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Size(min = 3, max = 70, message = "La party debe tener al menos 3 aventureros")
+    @Size(min = 3, max = 70, message = "El nombre de la party debe tener míni 3 caracteres y máximo 70 caracteres")
     @Column(nullable = false, length = 70)
     private String nombre;
 
