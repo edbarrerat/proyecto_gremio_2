@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.aventurero.aventureros.DTO.AventureroArmadoDTO;
 import com.aventurero.aventureros.DTO.AventureroDTO;
+import com.aventurero.aventureros.DTO.PartyExternaDTO;
 import com.aventurero.aventureros.model.Aventurero;
 import com.aventurero.aventureros.model.Profesion;
 import com.aventurero.aventureros.repository.AventureroRepository;
@@ -20,7 +22,12 @@ public class AventureroService {
     
     @Autowired
     private AventureroRepository aventureroRepository;
+
+    @Autowired
     private ProfesionRepository profesionRepository;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     public List<AventureroDTO> obtenerTodos() {
         return aventureroRepository.findAll().stream()
@@ -74,20 +81,25 @@ public class AventureroService {
     private AventureroDTO convertirADTO(Aventurero aventurero) {
         AventureroDTO dto = new AventureroDTO();
         dto.setId(aventurero.getId());
-        dto.setNombre(aventurero.getNombre());
-
-        if (aventurero.getParty() != null) {
-            dto.setNombreParty(aventurero.getParty().getNombre());
-        }else{
-            dto.setNombreParty("Lobo solitario, auuu");
-        }
-
-        
+        dto.setNombre(aventurero.getNombre());       
         if (aventurero.getProfesion() != null) {
             dto.setNombreProfesion(aventurero.getProfesion().getNombre());
         } else {
             dto.setNombreProfesion("Desempleado (Aún no elige su camino)"); 
         }
+
+        try {
+            PartyExternaDTO partyRecuperada = webClientBuilder.build()
+            .get()
+            .uri("http://localhost:8081/api/v1/")
+            .retrieve()
+            .bodyToMono(PartyExternaDTO.class)
+            .block();
+        dto.setNombreParty(partyRecuperada.getNombre());
+
+        } catch (Exception e) {
+            dto.setNombreParty(null);
+        };
         return dto;
     }
 

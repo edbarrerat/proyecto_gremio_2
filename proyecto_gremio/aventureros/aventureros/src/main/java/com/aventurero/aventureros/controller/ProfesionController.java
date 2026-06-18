@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aventurero.aventureros.DTO.ProfesionDTO;
+import com.aventurero.aventureros.model.Profesion;
+import com.aventurero.aventureros.service.ProfesionService;
+
 
 @RestController
 @RequestMapping("/api/v1/profesion")

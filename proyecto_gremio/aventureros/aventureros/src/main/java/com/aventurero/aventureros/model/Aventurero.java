@@ -37,10 +37,6 @@ public class Aventurero {
     private String nombre;
 
     //------------------------------------------------------------
-    
-    @ManyToOne
-    @JoinColumn(name="party_id")
-    private Party party;
 
     @OneToMany(mappedBy = "aventurero")
     @ToString.Exclude
