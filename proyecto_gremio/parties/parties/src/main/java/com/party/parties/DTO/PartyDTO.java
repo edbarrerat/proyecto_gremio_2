@@ -10,5 +10,6 @@ public class PartyDTO {
     private String nombre;
     private Integer nivel;
     private List<String> nombresAventureros;
-
+    private Integer gremioId;
+    private AventureroExternoDTO aventurero;
 }
