@@ -1,15 +1,14 @@
 package com.party.parties.Model;
 
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,9 +35,6 @@ public class Reputacion {
     @Column(nullable = false)
     private Integer nivel = 0;
     
-    //----------------------------------------------------------------------
-
-    @ManyToOne
-    @JoinColumn(name = "faccion_id")
-    private Faccion faccion;
+    @NotNull(message = "La facción siempre debe estar")
+    private Integer faccionId;
 }

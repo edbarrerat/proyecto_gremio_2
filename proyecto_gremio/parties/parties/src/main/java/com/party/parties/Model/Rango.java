@@ -1,13 +1,10 @@
 package com.party.parties.Model;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Builder
@@ -36,10 +32,4 @@ public class Rango {
     @Max(value = 15, message = "El nivel máximo es 15")
     @Column(nullable = false)
     private Integer nivel = 1;
-
-    //----------------------------------------------------------------------
-
-    @OneToMany(mappedBy = "rango")
-    @ToString.Exclude
-    private List<Mision> misiones;
 }
