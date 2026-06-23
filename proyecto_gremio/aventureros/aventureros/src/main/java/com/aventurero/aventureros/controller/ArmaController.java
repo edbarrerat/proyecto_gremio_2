@@ -17,15 +17,35 @@ import com.aventurero.aventureros.DTO.ArmaDTO;
 import com.aventurero.aventureros.model.Arma;
 import com.aventurero.aventureros.service.ArmaService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 
 @RestController
 @RequestMapping("/api/v1/armas")
+@Tag(name= "Armas", description = "Operaciones CRUD para la gestión de armas")
+
 public class ArmaController {
     @Autowired
     private ArmaService armaService;
 
     @GetMapping
+    @Operation(summary = "Lista las armas", description = "Obtiene todas las armas creadas y crea una lista de ellas")
+    @ApiResponses(value = (
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, devuelve una lista de las Armas convertidas a formato DTO",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No existen armas creadas, no se encontraron armas",
+            content = @Content
+        )
+    ))
     public ResponseEntity<List<ArmaDTO>> todasLasArmas() {
         List<ArmaDTO> armas = armaService.obtenerTodas();
         if (armas.isEmpty()) {

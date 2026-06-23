@@ -18,9 +18,12 @@ import com.aventurero.aventureros.DTO.ProfesionDTO;
 import com.aventurero.aventureros.model.Profesion;
 import com.aventurero.aventureros.service.ProfesionService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
 @RequestMapping("/api/v1/profesion")
+@Tag(name = "Profesiones", description = "Operaciones CRUD para la gestión de las profesiones de los aventureros.")
 public class ProfesionController {
     @Autowired
     private ProfesionService profesionService;

@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aventurero.aventureros.DTO.BolsoPocionesDTO;
 import com.aventurero.aventureros.service.BolsoPocionesService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 
 @RestController
 @RequestMapping("/api/v1/bolso")
+@Tag(name = "Bolso de Pociones", description = "Operaciones CRUD para gestionar el Bolso de Pociones")
 public class BolsoPocionesController {
 
     @Autowired
