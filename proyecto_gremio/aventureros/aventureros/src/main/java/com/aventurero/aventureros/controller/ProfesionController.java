@@ -18,6 +18,11 @@ import com.aventurero.aventureros.DTO.ProfesionDTO;
 import com.aventurero.aventureros.model.Profesion;
 import com.aventurero.aventureros.service.ProfesionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 
@@ -29,6 +34,17 @@ public class ProfesionController {
     private ProfesionService profesionService;
 
     @GetMapping
+    @Operation(summary = "Lista las profesiones", description = "Obtiene todas las profesiones creadas y crea una lista de ellas")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, devuelve una lista de las profesiones convertidas a formato DTO",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "204", description = "No existen profesiones creadas, no se encontraron profesiones",
+            content = @Content
+        )
+    })
     public ResponseEntity<List<ProfesionDTO>> todasLasProfesiones() {
         List<ProfesionDTO> profesion = profesionService.obtenerTodos();
         if (profesion.isEmpty()) {
@@ -38,6 +54,17 @@ public class ProfesionController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar profesion con ID", description = "Busca una profesion a través de un ID y si la encuentra la muestra.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, devuelve una profesion convertida a formato DTO",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No se encontró una profesion con el ID proporcionado",
+            content = @Content
+        )
+    })
     public ResponseEntity<ProfesionDTO> buscarPorId(@PathVariable Integer id) {
         try {
             ProfesionDTO prof = profesionService.buscarPorId(id);
@@ -48,6 +75,17 @@ public class ProfesionController {
     }
 
     @PostMapping
+    @Operation(summary = "Crea una profesion", description = "Crea un objeto profesion con los parametros entregados.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, crea el objeto profesion.",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "400", description = "No se pudo crear la profesion (parametros erróneos o la profesion ya existe)",
+            content = @Content
+        )
+    })
     public ResponseEntity<Profesion> agregarProfesion(@RequestBody Profesion prof) {
         try {
             Profesion guardado = profesionService.guardarProfesion(prof);
@@ -58,6 +96,17 @@ public class ProfesionController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Edita un arma", description = "Busca un arma a través de un ID y edita los parámetros nuevos.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, profesion editada.",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No se pudo editar la profesion (parametros erróneos o la profesion no existe)",
+            content = @Content
+        )
+    })
     public ResponseEntity<Profesion> editarProfesion(@PathVariable Integer id, @RequestBody Profesion prof) {
         try {
             Profesion editado = profesionService.actualizarProfesion(id, prof);
@@ -68,6 +117,17 @@ public class ProfesionController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualiza un arma", description = "Busca un arma a través de un ID y actualiza los parámetros nuevos.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, profesion actualizada.",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No se pudo actualizar la profesion (parametros erróneos o la profesion no existe)",
+            content = @Content
+        )
+    })
     public ResponseEntity<Profesion> actualizarProfesion(@PathVariable Integer id, @RequestBody Profesion prof){
         try{
             Profesion newProf = profesionService.actualizarProfesion(id, prof);
@@ -78,6 +138,17 @@ public class ProfesionController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Elimina una profesion", description = "Busca una aprofesiona través de un ID y si la encuentra la elimina")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", description = "Operación exitosa, profesion eliminada",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfesionDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No se encontró la profesion para eliminarla.",
+            content = @Content
+        )
+    })
     public ResponseEntity<String> eliminarProfesion(@PathVariable Integer id) {
         String resultado = profesionService.eliminar(id);
         if (resultado.contains("exitosamente")) {

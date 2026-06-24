@@ -1,29 +1,25 @@
+server:
+    port: 8081
+    
 spring:
-    application:
-        name:
-            proyecto_gremio
-
-    server:
-        port:
-            8081
     datasource:
-        url:
-            jdbc:mysql://localhost:3306/db_aventurero?createDatabaseIfNotExist=true
-        username:
-            root
+        url: jdbc:mysql://localhost:3306/db_proyecto_gremio?createDatabaseIfNotExist=true
+        username: root
         password:
-
-        driverClassName:
-            com.mysql.cj.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    application:
+        name: proyecto_gremio
     jpa:
         hibernate:
-            ddl-auto:
-                none
-            show-sql:
-                true
+            ddl-auto: none
+        show-sql: true
                 
     flyway:
-        enabled:
-            true
-        baseline-on-migrate:
-            true
+        enabled: true
+        baseline-on-migrate: true
+
+springdoc:
+    swagger-ui: 
+        path: /doc/swagger-ui/index.html
+    api-docs: 
+        path: /api-docs

@@ -67,11 +67,11 @@ public class BolsoPocionesService {
     }
 
     private BolsoPocionesDTO convertirADTO(BolsoPociones instancia) {
-    BolsoPocionesDTO dto = new BolsoPocionesDTO();
-    dto.setId(instancia.getId());
-    dto.setCantidad(instancia.getCantidad());
-    dto.setNombresAventureros(instancia.getAventurero().getNombre());
-    dto.setNombresPociones(instancia.getPocion().getNombre());
-    return dto;
+        BolsoPocionesDTO dto = new BolsoPocionesDTO();
+        dto.setId(instancia.getId());
+        dto.setCantidad(instancia.getCantidad());
+        dto.setNombresAventureros(instancia.getAventurero().getNombre());
+        dto.setNombresPociones(instancia.getPocion().getNombre());
+        return dto;
     }
 }

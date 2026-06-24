@@ -11,7 +11,7 @@ import com.aventurero.aventureros.model.Aventurero;
 
 @Repository
 public interface AventureroRepository extends JpaRepository<Aventurero, Integer> {
-    @Query("SELECT new com.example.proyecot_gremio.DTO.AventureroArmadoDTO(a.nombre, e.arma.nombre) " +
+    @Query("SELECT new com.aventurero.aventureros.DTO.AventureroArmadoDTO(a.nombre, e.arma.nombre) " +
         "FROM Aventurero a " +
         "JOIN a.equipoEquipado e")
 
