@@ -23,7 +23,7 @@ import com.gremio.gremios.Service.MisionService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("api/v1/gremios")
+@RequestMapping("/api/v1/gremios")
 public class GremioController {
 
     @Autowired
@@ -35,8 +35,8 @@ public class GremioController {
     @GetMapping
     public ResponseEntity<List<GremioDTO>> listarGremios() {
         List<GremioDTO> gremios = gremioService.obtenerTodos();
-        return gremios.isEmpty() 
-            ? new ResponseEntity<>(HttpStatus.NO_CONTENT) 
+        return gremios.isEmpty()
+            ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
             : new ResponseEntity<>(gremios, HttpStatus.OK);
     }
 
@@ -46,80 +46,69 @@ public class GremioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GremioDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<GremioDTO> actualizarGremio(
+            @PathVariable Integer id, @Valid @RequestBody Gremio gremio) {
         try {
-            GremioDTO gremio = gremioService.buscarPorId(id);
-            return new ResponseEntity<>(gremio, HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.actualizarGremio(id, gremio), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{gremioId}/party/{partyId}")
-    public ResponseEntity<String> reclutarParty(@PathVariable Integer gremioId, @PathVariable Integer partyId) {
+    public ResponseEntity<String> reclutarParty(
+            @PathVariable Integer gremioId, @PathVariable Integer partyId) {
         try {
-            String resultado = gremioService.añadirPartyAGremio(gremioId, partyId);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.añadirPartyAGremio(gremioId, partyId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Gremio> actualizarGremio(@PathVariable Integer id, @Valid @RequestBody Gremio gremio){
-        try{
-            Gremio newGremio = gremioService.actualizarGremio(id, gremio);
-            return new ResponseEntity<>(newGremio, HttpStatus.OK);
-        }catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
     @DeleteMapping("/{gremioId}/party/{partyId}")
-    public ResponseEntity<String> expulsarParty(@PathVariable Integer gremioId, @PathVariable Integer partyId) {
+    public ResponseEntity<String> expulsarParty(
+            @PathVariable Integer gremioId, @PathVariable Integer partyId) {
         try {
-            String resultado = gremioService.eliminarParty(gremioId, partyId);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.eliminarParty(gremioId, partyId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{gremioId}/mision/{misionId}")
-    public ResponseEntity<String> agregarMisionAGremio(@PathVariable Integer gremioId, @PathVariable Integer misionId) {
+    public ResponseEntity<String> agregarMisionAGremio(
+            @PathVariable Integer gremioId, @PathVariable Integer misionId) {
         try {
-            String resultado = gremioService.añadirMisionAGremio(gremioId, misionId);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.añadirMisionAGremio(gremioId, misionId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{gremioId}/mision/{misionId}")
-    public ResponseEntity<String> misionCompletada(@PathVariable Integer gremioId, @PathVariable Integer misionId) {
+    @PutMapping("/{gremioId}/mision/{misionId}/completar")
+    public ResponseEntity<String> misionCompletada(
+            @PathVariable Integer gremioId, @PathVariable Integer misionId) {
         try {
-            String resultado = gremioService.misionCompletada(gremioId, misionId);
-            return new ResponseEntity<>(resultado,HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.misionCompletada(gremioId, misionId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{gremioId}/faccion/{faccionId}")
-    public ResponseEntity<String> asignarFaccion(@PathVariable Integer gremioId, @PathVariable Integer faccionId) {
+    public ResponseEntity<String> asignarFaccion(
+            @PathVariable Integer gremioId, @PathVariable Integer faccionId) {
         try {
-            String resultado = gremioService.asignarFaccion(gremioId, faccionId);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.asignarFaccion(gremioId, faccionId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{gremioId}/faccion/{faccionId}")
-    public ResponseEntity<String> desligarFaccion(@PathVariable Integer gremioId, @PathVariable Integer faccionId) {
+    @DeleteMapping("/{gremioId}/faccion")
+    public ResponseEntity<String> desligarFaccion(@PathVariable Integer gremioId) {
         try {
-            String resultado = gremioService.desligarFaccion(gremioId, faccionId);
-            return new ResponseEntity<>(resultado,HttpStatus.OK);
+            return new ResponseEntity<>(gremioService.desligarFaccion(id, gremio), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -127,13 +116,9 @@ public class GremioController {
 
     @GetMapping("/{gremioId}/misiones/completadas")
     public ResponseEntity<List<MisionDTO>> misionesCompletadas(@PathVariable Integer gremioId) {
-        try {
-            List<MisionDTO> misiones = misionService.obtenerMisionesCompletadas(gremioId);
-            return misiones.isEmpty()
+        List<MisionDTO> misiones = misionService.obtenerMisionesCompletadas(gremioId);
+        return misiones.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(misiones, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 }

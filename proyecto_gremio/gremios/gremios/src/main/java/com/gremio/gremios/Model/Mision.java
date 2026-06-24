@@ -5,11 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,7 +57,14 @@ public class Mision {
     @Column(nullable = false)
     private Integer oroRecompensa = 100;
 
-    @NotNull (message = "Debes definir si esta completa o no")
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean estado;
+    private Boolean estado = false;
+
+    /*-------------------------------------------------------*/
+
+    @ManyToOne
+    @JoinColumn(name = "gremio_id", nullable = false)
+    private Gremio gremio;
+    
 }
