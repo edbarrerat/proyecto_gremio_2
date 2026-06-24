@@ -34,7 +34,7 @@ public class Faccion {
     @Column(nullable = false, length = 500)
     private String descripcion;
 
-    @NotNull (message = "Debes definir si es hostil o no")
+    @NotNull(message = "Debes definir si es hostil o no")
     @Column(nullable = false)
     private Boolean hostilidad;
 }

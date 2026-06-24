@@ -28,7 +28,7 @@ public class FaccionController {
     private FaccionService faccionService;
 
     @GetMapping
-    public ResponseEntity<List<FaccionDTO>> listarMisiones() {
+    public ResponseEntity<List<FaccionDTO>> listarFacciones() {
         List<FaccionDTO> facciones = faccionService.obtenerTodos();
         return facciones.isEmpty() 
             ? new ResponseEntity<>(HttpStatus.NO_CONTENT) 
@@ -43,30 +43,26 @@ public class FaccionController {
     @GetMapping("/{id}")
     public ResponseEntity<FaccionDTO> buscarPorId(@PathVariable Integer id) {
         try {
-            FaccionDTO faccion  = faccionService.buscarPorId(id);
-            return new ResponseEntity<>(faccion, HttpStatus.OK);
+            return new ResponseEntity<>(faccionService.buscarPorId(id), HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Faccion> actualizarFaccion(@PathVariable Integer id, @Valid @RequestBody Faccion faccion){
-        try{
-            Faccion newFaccion = faccionService.actualizarFaccion(id, faccion);
-            return new ResponseEntity<>(newFaccion, HttpStatus.OK);
-        }catch (RuntimeException e) {
+    public ResponseEntity<FaccionDTO> actualizarFaccion(
+            @PathVariable Integer id, @Valid @RequestBody Faccion faccion) {
+        try {
+            return new ResponseEntity<>(faccionService.actualizarFaccion(id, faccion), HttpStatus.OK);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarFaccion(@PathVariable Integer id) {
-        try {
-            String resultado = faccionService.eliminarFaccion(id);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        String resultado = faccionService.eliminarFaccion(id);
+        return new ResponseEntity<>(resultado, HttpStatus.OK);
     }
 }

@@ -1,5 +1,7 @@
 package com.gremio.gremios.DTO;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -9,5 +11,6 @@ public class GremioDTO {
     private String nombre;
     private Integer oro;
     private String nombreFaccion;
-    private PartyRegistradaDTO party;
+    private List<PartyDTO> parties;
+    private List<MisionDTO> misiones;
 }

@@ -30,9 +30,9 @@ public class MisionController {
     @GetMapping
     public ResponseEntity<List<MisionDTO>> listarMisiones() {
         List<MisionDTO> misiones = misionService.obtenerTodos();
-        return misiones.isEmpty() 
-            ? new ResponseEntity<>(HttpStatus.NO_CONTENT) 
-            : new ResponseEntity<>(misiones, HttpStatus.OK);
+        return misiones.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(misiones, HttpStatus.OK);
     }
 
     @PostMapping
@@ -43,28 +43,33 @@ public class MisionController {
     @GetMapping("/{id}")
     public ResponseEntity<MisionDTO> buscarPorId(@PathVariable Integer id) {
         try {
-            MisionDTO mision = misionService.buscarPorId(id);
-            return new ResponseEntity<>(mision, HttpStatus.OK);
+            return new ResponseEntity<>(misionService.buscarPorId(id), HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Mision> actualizarMision(@PathVariable Integer id, @Valid @RequestBody Mision mision){
-        try{
-            Mision newMision = misionService.actualizarMision(id, mision);
-            return new ResponseEntity<>(newMision, HttpStatus.OK);
-        }catch (RuntimeException e) {
+    public ResponseEntity<MisionDTO> actualizarMision(
+            @PathVariable Integer id, @Valid @RequestBody Mision mision) {
+        try {
+            return new ResponseEntity<>(misionService.actualizarMision(id, mision), HttpStatus.OK);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarMision(@PathVariable Integer id) {
+        String resultado = misionService.eliminarMision(id);
+        return new ResponseEntity<>(resultado, HttpStatus.OK);
+    }
+
+    @PutMapping("/{misionId}/party/{partyId}/aceptar")
+    public ResponseEntity<String> aceptarMision(
+            @PathVariable Integer misionId, @PathVariable Integer partyId) {
         try {
-            String resultado = misionService.eliminarMision(id);
-            return new ResponseEntity<>(resultado, HttpStatus.OK);
+            return new ResponseEntity<>(misionService.aceptarMision(partyId, misionId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

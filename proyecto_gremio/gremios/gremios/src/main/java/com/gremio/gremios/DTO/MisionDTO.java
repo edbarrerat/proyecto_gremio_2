@@ -13,4 +13,5 @@ public class MisionDTO {
     private Integer oroRecompensa;
     private Boolean estado;
     private String rango;
+    private String nombreGremio;
 }

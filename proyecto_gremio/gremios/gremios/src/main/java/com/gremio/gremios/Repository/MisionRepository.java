@@ -14,4 +14,6 @@ public interface MisionRepository extends JpaRepository<Mision, Integer>{
 
     @Query("SELECT x FROM Mision x WHERE x.gremio.id = :gremioId AND x.estado = true")
     List<Mision> findMisionesCompletadas(@Param("gremioId") Integer gremioId);
+
+    List<Mision> findByGremioIdAndEstadoTrue(Integer gremioId);
 }
