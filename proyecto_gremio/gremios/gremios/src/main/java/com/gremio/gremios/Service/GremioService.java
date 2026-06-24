@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.gremio.gremios.DTO.GremioDTO;
-import com.gremio.gremios.DTO.PartyRegistradaDTO;
+import com.gremio.gremios.DTO.MisionDTO;
+import com.gremio.gremios.DTO.PartyDTO;
 import com.gremio.gremios.Model.Faccion;
 import com.gremio.gremios.Model.Gremio;
 import com.gremio.gremios.Model.Mision;
@@ -26,9 +27,6 @@ public class GremioService {
 
     @Autowired
     private GremioRepository gremioRepository;
-
-    @Autowired
-    private PartyRepository partyRepository;
 
     @Autowired
     private MisionRepository misionRepository;
@@ -63,62 +61,48 @@ public class GremioService {
         return gremioRepository.save(newGremio);
     }
 
-    private GremioDTO convertirADTO(Gremio gremio) {
-        GremioDTO dto = new GremioDTO();
-        dto.setId(gremio.getId());
-        dto.setNombre(gremio.getNombre());
-        dto.setOro(gremio.getOro());
-        try {
-            PartyRegistradaDTO party = webClientBuilder.build()
-                .get()
-                .uri("http://localhost:8082/api/v1/sables/buscar-por-gremio/" + gremio.getId())
-                .retrieve()
-                .bodyToMono(PartyRegistradaDTO.class)
-                .block();
-
-            dto.setParty(party);
-            
-        } catch (Exception e) {
-            dto.setParty(null);
-        }
-        return dto;
-    }
-    }
-
+    
     public String añadirPartyAGremio(Integer gremioId, Integer partyId) {
-        Gremio gremio = gremioRepository.findById(gremioId)
+        gremioRepository.findById(gremioId)
             .orElseThrow(() -> new RuntimeException("Error: El Gremio no existe en los registros oficiales."));
-        Party party = partyRepository.findById(partyId)
-            .orElseThrow(() -> new RuntimeException("Error: La Party no existe en los registros."));
-        if (party.getGremio() != null) {
-            return "Esta party ya pertenece al gremio: " + party.getGremio().getNombre();
+        try {
+            return webClientBuilder.build()
+                .put()
+                .uri("http://localhost:8082/api/v1/parties/" + partyId + "/asignar-gremio/" + gremioId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al comunicarse con parties: " + e.getMessage();
         }
-
-        party.setGremio(gremio); 
-        partyRepository.save(party);
-
-        return "La party '" + party.getNombre() + "' se unió al gremio: " + gremio.getNombre();
     }
 
     public String eliminarParty(Integer gremioId, Integer partyId) {
-        Party party = partyRepository.findById(partyId)
-            .orElseThrow(() -> new RuntimeException("La party no existe en los registros del gremio."));
-        if (party.getGremio() != null && party.getGremio().getId().equals(gremioId)) {
-            party.setGremio(null);
-            partyRepository.save(party);
-            return "La party ha sido expulsada del gremio permanentemente.";
+        gremioRepository.findById(gremioId)
+            .orElseThrow(() -> new RuntimeException("El Gremio no existe en los registros oficiales."));
+        try {
+            return webClientBuilder.build()
+                .put()
+                .uri("http://localhost:8082/api/v1/parties/" + partyId + "/desligar-gremio")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al comunicarse con parties: " + e.getMessage();
         }
-        return "Esta party no pertenece al gremio.";
     }
 
     public String añadirMisionAGremio(Integer gremioId, Integer misionId) {
         Gremio gremio = gremioRepository.findById(gremioId)
             .orElseThrow(() -> new RuntimeException("Error: El Gremio no existe en los registros oficiales."));
+
         Mision mision = misionRepository.findById(misionId)
             .orElseThrow(() -> new RuntimeException("Error: La Mision no existe en los registros."));
+
         if (mision.getGremio() != null) {
             return "Esta misión ya está asignada al gremio: " + mision.getGremio().getNombre();
         }
+
         mision.setGremio(gremio); 
         misionRepository.save(mision);
 
@@ -128,37 +112,80 @@ public class GremioService {
     public String misionCompletada(Integer gremioId, Integer misionId) {
         Mision mision = misionRepository.findById(misionId)
             .orElseThrow(() -> new RuntimeException("La mision no existe en los registros del gremio."));
-        if (mision.getGremio() != null && mision.getGremio().getId().equals(gremioId)) {
-            mision.setEstado(true);
-            misionRepository.save(mision);
-            return "La mision ha sido completada exitosamente";
+        if (mision.getGremio() != null || mision.getGremio().getId().equals(gremioId)) {
+            return "Esta mision no pertenece al gremio indicado";
         }
-        return "Esta mision no pertenece al gremio.";
+        mision.setEstado(true);
+        misionRepository.save(mision);
+        return "La mision ha sido completada exitosamente!!";
     }
 
     public String asignarFaccion(Integer gremioId, Integer faccionId) {
         Gremio gremio = gremioRepository.findById(gremioId)
             .orElseThrow(() -> new RuntimeException("Error: El Gremio no existe en los registros oficiales."));
         if (gremio.getFaccion() != null) {
-            return "Este gremio ya tiene una facción aliada.";
+            return "Este gremio ya tiene una facción aliada: " + gremio.getFaccion().getNombre();
         }
         Faccion faccion = faccionRepository.findById(faccionId)
             .orElseThrow(() -> new RuntimeException("Error: La Facción no existe en los registros."));
         gremio.setFaccion(faccion);
         gremioRepository.save(gremio);
-        return "Facción asignada correctamente.";
+        return "Faccion " + faccion.getNombre() + " asignada correctamente al gremio";
     }
 
     public String desligarFaccion(Integer gremioId, Integer faccionId) {
-        Faccion faccion = faccionRepository.findById(faccionId)
-            .orElseThrow(() -> new RuntimeException("La Faccion no existe en los registros del gremio."));
-        if (faccion.getGremio() != null && faccion.getGremio().getId().equals(gremioId)) {
-            Gremio gremio = gremioRepository.findById(gremioId)
-            .orElseThrow(() -> new RuntimeException("El gremio no existe."));
-            gremio.setFaccion(null);
-            gremioRepository.save(gremio);
-            return "La Facción se ha desligado del gremio permanentemente.";
+        Gremio gremio = gremioRepository.findById(gremioId)
+            .orElseThrow(() -> new RuntimeException("El gremio no existe en los registros oficiales"));
+        if (gremio.getFaccion() == null) {
+            return "Este gremio no tiene ninguna faccion asignada";
         }
-        return "Esta Faccion no esta asociada al gremio actual.";
+        gremio.setFaccion(null);
+        gremioRepository.save(gremio);
+        return "La faccion se ha desligado del gremio permanentemente";
+    }
+
+    private GremioDTO convertirADTO(Gremio gremio) {
+        GremioDTO dto = new GremioDTO();
+        dto.setId(gremio.getId());
+        dto.setNombre(gremio.getNombre());
+        dto.setOro(gremio.getOro());
+
+        if(gremio.getFaccion() != null) {
+            dto.setNombreFaccion(gremio.getFaccion().getNombre());
+        }
+
+        List<MisionDTO> misiones = gremio.getMisiones().stream().map(this::convertirMisionADTO).toList();
+        dto.setMisiones(misiones);
+        
+        try {
+            List<PartyDTO> parties = webClientBuilder.build()
+                .get()
+                .uri("http://localhost:8082/api/v1/parties/buscar-por-gremio/" + gremio.getId())
+                .retrieve()
+                .bodyToFlux(PartyDTO.class)
+                .collectList()
+                .block();
+
+            dto.setParties(parties != null ? parties : List.of());
+            
+        } catch (Exception e) {
+            dto.setParties(List.of());
+        }
+        return dto;
+    }
+
+    private MisionDTO convertirMisionADTO(Mision mision) {
+        MisionDTO dto = new MisionDTO();
+        dto.setId(mision.getId());
+        dto.setNombre(mision.getNombre());
+        dto.setDescripcion(mision.getDescripcion());
+        dto.setNivel(mision.getNivel());
+        dto.setExpRecompensa(mision.getExpRecompensa());
+        dto.setOroRecompensa(mision.getOroRecompensa());
+        dto.setEstado(mision.getEstado());
+        if (mision.getGremio() != null) {
+            dto.setNombreGremio(mision.getGremio().getNombre());
+        }
+        return dto;
     }
 }

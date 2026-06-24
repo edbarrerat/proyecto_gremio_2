@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.gremio.gremios.DTO.MisionDTO;
 import com.gremio.gremios.Model.Mision;
+import com.gremio.gremios.Repository.GremioRepository;
 import com.gremio.gremios.Repository.MisionRepository;
 
 import jakarta.transaction.Transactional;
@@ -16,10 +18,13 @@ import jakarta.transaction.Transactional;
 public class MisionService {
 
     @Autowired
+    private WebClient.Builder webClientBuilder;
+
+    @Autowired
     private MisionRepository misionRepository;
 
     @Autowired
-    private PartyRepository partyRepository;
+    private GremioRepository gremioRepository;
     
     public List<MisionDTO> obtenerTodos() {
         return misionRepository.findAll().stream()
@@ -50,48 +55,44 @@ public class MisionService {
     }
 
     public Mision actualizarMision(Integer id, Mision mision){
-        Mision newMision = misionRepository.findById(id).orElseThrow(() -> new RuntimeException("La mision no existe en los registros."));
+        Mision misionExistente = misionRepository.findById(id).orElseThrow(() -> new RuntimeException("La mision no existe en los registros."));
         if(mision.getNombre() != null){
-            newMision.setNombre(mision.getNombre());
+            misionExistente.setNombre(mision.getNombre());
         }
         if(mision.getDescripcion() != null){
-            newMision.setDescripcion(mision.getDescripcion());
+            misionExistente.setDescripcion(mision.getDescripcion());
         }
         if(mision.getExpRecompensa() != null){
-            newMision.setExpRecompensa(mision.getExpRecompensa());
+            misionExistente.setExpRecompensa(mision.getExpRecompensa());
         }
         if(mision.getOroRecompensa() != null){
-            newMision.setOroRecompensa(mision.getOroRecompensa());
+            misionExistente.setOroRecompensa(mision.getOroRecompensa());
         }
-        return misionRepository.save(newMision);
+        return misionRepository.save(misionExistente);
     }
 
     public String aceptarMision(Integer partyId, Integer misionId) {
-        Party party = partyRepository.findById(partyId)
-            .orElseThrow(() -> new RuntimeException("La party no existe."));
-
         Mision mision = misionRepository.findById(misionId)
             .orElseThrow(() -> new RuntimeException("La misión no existe."));
 
-        Rango rango = mision.getRango();
-
-        if (mision.getParty() != null) {
-        return "Esta misión ya fue tomada por la party: " + mision.getParty().getNombre();
+        if (mision.getEstado()) {
+            return "Esta mision ya fue completada";
         }
 
-        if (rango != null) {
-            if (party.getNivel() < rango.getNivel()) {
-                return "Rango insuficiente. Se requiere rango: " + rango.getNombre();
-            }
-        }        
-        
-        mision.setParty(party);
-        misionRepository.save(mision);
-        return "Misión aceptada exitosamente: " + mision.getNombre();
+        try {
+            return webClientBuilder.build()
+                .put()
+                .uri("http://localhost:8082/api/v1/parties/" + partyId + "/aceptar-mision/" + misionId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al contactar con parties: " + e.getMessage();
+        }
     }
 
     public List<MisionDTO> obtenerMisionesCompletadas(Integer gremioId) {
-    return misionRepository.findMisionesCompletadas(gremioId).stream()
+    return misionRepository.findByGremioIdAndEstadoTrue(gremioId).stream()
             .map(this::convertirADTO)
             .toList();
     }
@@ -104,6 +105,12 @@ public class MisionService {
         dto.setDescripcion(mision.getDescripcion());
         dto.setExpRecompensa(mision.getExpRecompensa());
         dto.setOroRecompensa(mision.getOroRecompensa());
+        dto.setEstado(mision.getEstado());
+
+        if(mision.getGremio() != null) {
+            dto.setNombreGremio(mision.getGremio().getNombre());
+        }
+
         return dto;
     }
 }
