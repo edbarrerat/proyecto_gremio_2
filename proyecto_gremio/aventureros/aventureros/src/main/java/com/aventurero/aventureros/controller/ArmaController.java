@@ -104,7 +104,11 @@ public class ArmaController {
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
         ),
         @ApiResponse(
-            responseCode = "404", description = "No se pudo actualizar el arma (parametros erróneos o el arma no existe)",
+            responseCode = "400", description = "No haz ingresado un ID válido (BAD REQUEST)",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
+        ),
+        @ApiResponse(
+            responseCode = "404", description = "No se pudo actualizar el arma (el arma no existe)",
             content = @Content
         )
     })
