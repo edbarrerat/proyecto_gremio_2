@@ -13,7 +13,7 @@ public class PartyExternaDTO {
     private String nombre;
     @Schema(example = "1")
     private Integer nivel;
-    @Schema(example = "Frodo")
-    private List<String> nombresAventureros;
+    @Schema(example = "1")
+    private Integer gremioId;
 
 }

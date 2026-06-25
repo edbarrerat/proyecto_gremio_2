@@ -11,16 +11,16 @@ spring:
         webmvc:
           routes:
             - id: aventureros-service
-              uri: http://127.0.0.1:8082
+              uri: lb://aventureros
               predicates:
                 - Path=/api/v1/**
 
             - id: party-service
-              uri: http://127.0.0.1:8083
+              uri: lb://party
               predicates:
                 - Path=/api/v1/**
             
             - id: gremio-service
-              uri: http://127.0.0.1:8084
+              uri: lb://gremio
               predicates:
                 - Path=/api/v1/**

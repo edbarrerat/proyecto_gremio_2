@@ -91,7 +91,7 @@ public class AventureroService {
         try {
             PartyExternaDTO partyRecuperada = webClientBuilder.build()
             .get()
-            .uri("http://localhost:8081/api/v1/")
+            .uri("http://parties/api/v1/"+aventurero.)
             .retrieve()
             .bodyToMono(PartyExternaDTO.class)
             .block();
