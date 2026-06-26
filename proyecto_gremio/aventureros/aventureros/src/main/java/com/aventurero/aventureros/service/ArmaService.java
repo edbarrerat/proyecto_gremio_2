@@ -31,22 +31,20 @@ public class ArmaService {
         return convertirADTO(arma);
     }
 
+    public ArmaDTO guardarArma(Arma arma){
+        Arma guardar = armaRepository.save(arma);
+        return convertirADTO(guardar);
+    }
+
     public String eliminarArma(Integer id){
-        try {
-            Arma arma = armaRepository.findById(id)
-            .orElseThrow(()->new RuntimeException("No se puede eliminar: el arma con Id"+id+" no existe."));
-            armaRepository.delete(arma);
-            return "El arma '"+arma.getNombre()+"' ha sido eliminada exitosamente.";
-        } catch (RuntimeException e) {
-            return e.getMessage();
-        }
+        Arma arma = armaRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("No se puede eliminar: el arma con Id " + id + " no existe."));
+        armaRepository.delete(arma);
+        return "El arma '" + arma.getNombre() + "' ha sido eliminada exitosamente.";    
     }
+    
 
-    public Arma guardarArma(Arma arma){
-        return armaRepository.save(arma);
-    }
-
-    public Arma actualizarArma(Integer id,Arma arma){
+    public ArmaDTO actualizarArma(Integer id,Arma arma){
         Arma arm = armaRepository.findById(id).orElseThrow(() -> new RuntimeException("El arma no está en los registros."));
         if(arma.getNombre() != null){
             arm.setNombre(arma.getNombre());
@@ -57,7 +55,9 @@ public class ArmaService {
         if(arma.getDañoArma() != null){
             arm.setDañoArma(arma.getDañoArma());
         }
-        return armaRepository.save(arm);
+        Arma armaActualzada =armaRepository.save(arm);
+        return convertirADTO(armaActualzada);
+
     }
 
     private ArmaDTO convertirADTO(Arma arma) {
