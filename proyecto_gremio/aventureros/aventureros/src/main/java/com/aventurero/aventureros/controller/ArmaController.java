@@ -43,7 +43,7 @@ public class ArmaController {
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
         ),
         @ApiResponse(
-            responseCode = "404", description = "No existen armas creadas, no se encontraron armas",
+            responseCode = "204", description = "No existen armas creadas, no se encontraron armas",
             content = @Content
         )
     })
@@ -80,7 +80,7 @@ public class ArmaController {
     @Operation(summary = "Crea un arma", description = "Crea un objeto arma con los parametros entregados.")
     @ApiResponses(value = {
         @ApiResponse(
-            responseCode = "200", description = "Operación exitosa, crea el objeto arma.",
+            responseCode = "201", description = "Operación exitosa, crea el objeto arma.",
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
         ),
         @ApiResponse(
@@ -88,9 +88,9 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<Arma> agregarArma(@Valid @RequestBody Arma arma) {
+    public ResponseEntity<ArmaDTO> agregarArma(@Valid @RequestBody Arma arma) {
         try {
-            Arma guardado = armaService.guardarArma(arma);
+            ArmaDTO guardado = armaService.guardarArma(arma);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -113,9 +113,9 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<Arma> actualizarArma(@PathVariable Integer id, @RequestBody Arma arm){
+    public ResponseEntity<ArmaDTO> actualizarArma(@PathVariable Integer id, @RequestBody Arma arm){
         try{
-            Arma newArm = armaService.actualizarArma(id, arm);
+            ArmaDTO newArm = armaService.actualizarArma(id, arm);
             return new ResponseEntity<>(newArm, HttpStatus.OK);
         }catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -127,7 +127,7 @@ public class ArmaController {
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200", description = "Operación exitosa, arma eliminada",
-            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
+            content = { @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))}
         ),
         @ApiResponse(
             responseCode = "404", description = "No se encontró el arma para eliminarla.",
