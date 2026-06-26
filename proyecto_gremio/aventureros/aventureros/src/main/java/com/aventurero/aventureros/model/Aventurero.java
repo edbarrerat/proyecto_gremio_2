@@ -24,7 +24,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "aventurteros")
+@Table(name = "aventureros")
 public class Aventurero {
 
     @Id
@@ -37,7 +37,7 @@ public class Aventurero {
     private String nombre;
 
     @Column(name = "party_id")
-    private Integer party_id;
+    private Integer partyId;
     //------------------------------------------------------------
 
     @OneToMany(mappedBy = "aventurero")

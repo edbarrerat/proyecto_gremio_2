@@ -85,18 +85,19 @@ public class AventureroService {
             dto.setNombreProfesion("Desempleado (Aún no elige su camino)"); 
         }
 
-        try {
-            PartyExternaDTO partyRecuperada = webClientBuilder.build()
-            .get()
-            .uri("http://parties/api/v1/"+aventurero.getParty_id())
-            .retrieve()
-            .bodyToMono(PartyExternaDTO.class)
-            .block();
-            dto.setNombre_party(partyRecuperada.getNombre());
-
-        } catch (Exception e) {
-            dto.setNombre_party(null);
-        };
+        if (aventurero.getPartyId() != null) {
+            try {
+                PartyExternaDTO partyRecuperada = webClientBuilder.build()
+                .get()
+                .uri("http://parties/api/v1/" + aventurero.getPartyId())
+                .retrieve()
+                .bodyToMono(PartyExternaDTO.class)
+                .block();
+                dto.setNombre_party(partyRecuperada.getNombre());
+            } catch (Exception e) {
+                dto.setNombre_party(null);
+            }
+        }
         return dto;
     }
 
