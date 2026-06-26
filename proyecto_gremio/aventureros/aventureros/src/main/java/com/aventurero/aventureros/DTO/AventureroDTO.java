@@ -12,8 +12,11 @@ public class AventureroDTO {
     @Schema(example = "Frodo")
     private String nombre;
     @Schema(example = "1")
-    private PartyExternaDTO party;
     private String nombreProfesion;
+    @Schema(example = "1")
+    private Integer party_id;
+    @Schema(example="1")
+    private  String nombre_party;
     @Schema(example = "Pocion pequeña")
     private List<String> nombrePociones;
     @Schema(example = "Sting")

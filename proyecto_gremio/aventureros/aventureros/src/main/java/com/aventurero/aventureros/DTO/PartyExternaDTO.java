@@ -13,7 +13,5 @@ public class PartyExternaDTO {
     private String nombre;
     @Schema(example = "1")
     private Integer nivel;
-    @Schema(example = "1")
-    private Integer gremioId;
 
 }

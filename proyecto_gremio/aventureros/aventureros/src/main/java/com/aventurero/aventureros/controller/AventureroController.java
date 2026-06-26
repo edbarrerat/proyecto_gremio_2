@@ -63,6 +63,10 @@ public class AventureroController {
             content = { @Content(mediaType = "application/json", schema = @Schema(implementation = AventureroDTO.class))}
         ),
         @ApiResponse(
+            responseCode = "400", description = "Operación fallida, sintáxis incorrecta u otro error.",
+            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = AventureroDTO.class))}
+        ),
+        @ApiResponse(
             responseCode = "404", description = "No existen el aventurero con el ID proporcionado",
             content = @Content
         )

@@ -36,6 +36,8 @@ public class Aventurero {
     @Column(nullable = false, length = 30)
     private String nombre;
 
+    @Column(name = "party_id")
+    private Integer party_id;
     //------------------------------------------------------------
 
     @OneToMany(mappedBy = "aventurero")

@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 
 
@@ -87,7 +88,7 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<Arma> agregarArma(@RequestBody Arma arma) {
+    public ResponseEntity<Arma> agregarArma(@Valid @RequestBody Arma arma) {
         try {
             Arma guardado = armaService.guardarArma(arma);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);

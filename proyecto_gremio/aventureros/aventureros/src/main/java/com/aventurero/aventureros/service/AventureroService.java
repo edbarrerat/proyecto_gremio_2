@@ -91,14 +91,14 @@ public class AventureroService {
         try {
             PartyExternaDTO partyRecuperada = webClientBuilder.build()
             .get()
-            .uri("http://parties/api/v1/"+aventurero.)
+            .uri("http://parties/api/v1/"+aventurero.getParty_id())
             .retrieve()
             .bodyToMono(PartyExternaDTO.class)
             .block();
-        dto.setNombreParty(partyRecuperada.getNombre());
+            dto.setNombre_party(partyRecuperada.getNombre());
 
         } catch (Exception e) {
-            dto.setNombreParty(null);
+            dto.setNombre_party(null);
         };
         return dto;
     }
