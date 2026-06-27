@@ -13,14 +13,27 @@ spring:
             - id: aventureros-service
               uri: lb://aventureros
               predicates:
-                - Path=/api/v1/**
+                - Path=/api/v1/aventureros/**, /aventureros/api-docs/**               
 
             - id: party-service
-              uri: lb://party
+              uri: lb://parties
               predicates:
-                - Path=/api/v1/**
+                - Path=/api/v1/parties/**, /parties/api-docs/**
             
             - id: gremio-service
-              uri: lb://gremio
+              uri: lb://gremios
               predicates:
-                - Path=/api/v1/**
+                - Path=/api/v1/gremios/**, /gremios/api-docs/**
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    urls:
+      - name: Microservicio Gremios
+        url: /gremios/api-docs
+      - name: Microservicio Parties
+        url: /parties/api-docs
+      - name: Microservicio Aventureros
+        url: /aventureros/api-docs
+  api-docs:
+    enabled: true

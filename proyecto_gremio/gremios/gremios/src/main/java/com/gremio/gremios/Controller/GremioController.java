@@ -45,11 +45,11 @@ public class GremioController {
         return new ResponseEntity<>(gremioService.guardarGremio(gremio), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<GremioDTO> actualizarGremio(
             @PathVariable Integer id, @Valid @RequestBody Gremio gremio) {
         try {
-            return new ResponseEntity<>(gremioService.actualizarGremio(id, gremio), HttpStatus.OK);
+            return new ResponseEntity(gremioService.actualizarGremio(id, gremio), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -108,7 +108,7 @@ public class GremioController {
     @DeleteMapping("/{gremioId}/faccion")
     public ResponseEntity<String> desligarFaccion(@PathVariable Integer gremioId) {
         try {
-            return new ResponseEntity<>(gremioService.desligarFaccion(id, gremio), HttpStatus.OK);
+            return new ResponseEntity(gremioService.desligarFaccion(gremioId), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

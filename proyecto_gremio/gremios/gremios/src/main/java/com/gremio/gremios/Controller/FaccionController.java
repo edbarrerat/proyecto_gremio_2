@@ -53,7 +53,7 @@ public class FaccionController {
     public ResponseEntity<FaccionDTO> actualizarFaccion(
             @PathVariable Integer id, @Valid @RequestBody Faccion faccion) {
         try {
-            return new ResponseEntity<>(faccionService.actualizarFaccion(id, faccion), HttpStatus.OK);
+            return new ResponseEntity(faccionService.actualizarFaccion(id, faccion), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

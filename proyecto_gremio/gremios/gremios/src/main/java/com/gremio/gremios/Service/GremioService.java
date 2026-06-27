@@ -133,7 +133,7 @@ public class GremioService {
         return "Faccion " + faccion.getNombre() + " asignada correctamente al gremio";
     }
 
-    public String desligarFaccion(Integer gremioId, Integer faccionId) {
+    public String desligarFaccion(Integer gremioId) {
         Gremio gremio = gremioRepository.findById(gremioId)
             .orElseThrow(() -> new RuntimeException("El gremio no existe en los registros oficiales"));
         if (gremio.getFaccion() == null) {

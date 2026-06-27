@@ -53,7 +53,7 @@ public class MisionController {
     public ResponseEntity<MisionDTO> actualizarMision(
             @PathVariable Integer id, @Valid @RequestBody Mision mision) {
         try {
-            return new ResponseEntity<>(misionService.actualizarMision(id, mision), HttpStatus.OK);
+            return new ResponseEntity(misionService.actualizarMision(id, mision), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
