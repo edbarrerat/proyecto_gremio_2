@@ -158,7 +158,7 @@ void testActualizarArma_Exitoso() {
     when(armaRepository.findById(idExistente)).thenReturn(Optional.of(armaEnBD));
     when(armaRepository.save(any(Arma.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    Arma resultado = armaService.actualizarArma(idExistente, armaConCambios);
+    ArmaDTO resultado = armaService.actualizarArma(idExistente, armaConCambios);
 
     assertNotNull(resultado, "El objeto actualizado no debería ser nulo");
     assertEquals(idExistente, resultado.getId(), "El ID debe seguir siendo el mismo");
