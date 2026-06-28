@@ -22,9 +22,6 @@ public class MisionService {
 
     @Autowired
     private MisionRepository misionRepository;
-
-    @Autowired
-    private GremioRepository gremioRepository;
     
     public List<MisionDTO> obtenerTodos() {
         return misionRepository.findAll().stream()
@@ -54,21 +51,16 @@ public class MisionService {
         }
     }
 
-    public Mision actualizarMision(Integer id, Mision mision){
+    public MisionDTO actualizarMision(Integer id, Mision mision) {
         Mision misionExistente = misionRepository.findById(id).orElseThrow(() -> new RuntimeException("La mision no existe en los registros."));
-        if(mision.getNombre() != null){
-            misionExistente.setNombre(mision.getNombre());
-        }
-        if(mision.getDescripcion() != null){
-            misionExistente.setDescripcion(mision.getDescripcion());
-        }
-        if(mision.getExpRecompensa() != null){
-            misionExistente.setExpRecompensa(mision.getExpRecompensa());
-        }
-        if(mision.getOroRecompensa() != null){
-            misionExistente.setOroRecompensa(mision.getOroRecompensa());
-        }
-        return misionRepository.save(misionExistente);
+
+        if (mision.getNombre() != null)misionExistente.setNombre(mision.getNombre());
+        if (mision.getDescripcion() != null)misionExistente.setDescripcion(mision.getDescripcion());
+        if (mision.getNivel() != null)misionExistente.setNivel(mision.getNivel());
+        if (mision.getExpRecompensa() != null)misionExistente.setExpRecompensa(mision.getExpRecompensa());
+        if (mision.getOroRecompensa() != null)misionExistente.setOroRecompensa(mision.getOroRecompensa());
+
+        return convertirADTO(misionRepository.save(misionExistente));
     }
 
     public String aceptarMision(Integer partyId, Integer misionId) {

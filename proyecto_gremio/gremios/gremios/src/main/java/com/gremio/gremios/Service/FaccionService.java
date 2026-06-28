@@ -49,24 +49,20 @@ public class FaccionService {
             }
 
             faccionRepository.delete(faccion);
-            return "La mision '"+ faccion.getNombre()+ "' ha sido eliminado exitosamente de los registros.";
+            return "La faccion '"+ faccion.getNombre()+ "' ha sido eliminado exitosamente de los registros.";
         } catch (RuntimeException e) {
             return e.getMessage();
         }
     }
 
-    public Faccion actualizarFaccion(Integer id, Faccion faccion){
+    public FaccionDTO actualizarFaccion(Integer id, Faccion faccion) {
         Faccion faccionExistente = faccionRepository.findById(id).orElseThrow(() -> new RuntimeException("La faccion no existe en los registros."));
-        if(faccion.getNombre() != null){
-            faccionExistente.setNombre(faccion.getNombre());
-        }
-        if(faccion.getDescripcion() != null){
-            faccionExistente.setDescripcion(faccion.getDescripcion());
-        }
-        if(faccion.getHostilidad() != null){
-            faccionExistente.setHostilidad(faccion.getHostilidad());
-        }
-        return faccionRepository.save(faccionExistente);
+
+        if (faccion.getNombre() != null)faccionExistente.setNombre(faccion.getNombre());
+        if (faccion.getDescripcion() != null)faccionExistente.setDescripcion(faccion.getDescripcion());
+        if (faccion.getHostilidad() != null)faccionExistente.setHostilidad(faccion.getHostilidad());
+
+        return convertirADTO(faccionRepository.save(faccionExistente));
     }
 
     private FaccionDTO convertirADTO(Faccion faccion) {
