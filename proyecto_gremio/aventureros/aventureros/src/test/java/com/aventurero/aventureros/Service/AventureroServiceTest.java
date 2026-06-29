@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.aventurero.aventureros.DTO.AventureroArmadoDTO;
 import com.aventurero.aventureros.DTO.AventureroDTO;
 import com.aventurero.aventureros.DTO.PartyExternaDTO;
 import com.aventurero.aventureros.model.Aventurero;
@@ -244,8 +245,19 @@ public class AventureroServiceTest {
         verifyNoMoreInteractions(profesionRepository);
     }
 
-    
+    @Test
+    void testObtenerReporteDeArmados_ListaVacia() {
+        when(aventureroRepository.buscarSoloAventurerosArmados()).thenReturn(List.of());
 
+        List<AventureroArmadoDTO> resultado = aventureroService.obtenerReporteDeArmados();
 
+        assertNotNull(resultado, "La lista devuelta por el servicio nunca debe ser nula");
+        assertTrue(resultado.isEmpty(), "La lista debería estar completamente vacía");
+        assertEquals(0, resultado.size(), "El tamaño de la lista debe ser cero");
 
+        verify(aventureroRepository, times(1)).buscarSoloAventurerosArmados();
+        verifyNoInteractions(webClientBuilder);
+        verifyNoMoreInteractions(aventureroRepository);
+
+    }
 }

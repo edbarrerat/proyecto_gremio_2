@@ -137,42 +137,39 @@ public class ArmaServiceTest {
     }
 
     @Test
-void testActualizarArma_Exitoso() {
-    Integer idExistente = 15;
-    
-    Arma armaEnBD = new Arma();
-    armaEnBD.setId(idExistente);
-    armaEnBD.setNombre("Espada Vieja");
-    armaEnBD.setDescripcion("Una espada oxidada por el tiempo.");
-    armaEnBD.setDañoArma(10);
+    void testActualizarArma_Exitoso() {
+        Integer idExistente = 15;
+        
+        Arma armaEnBD = new Arma();
+        armaEnBD.setId(idExistente);
+        armaEnBD.setNombre("Espada Vieja");
+        armaEnBD.setDescripcion("Una espada oxidada por el tiempo.");
+        armaEnBD.setDañoArma(10);
 
-    String nuevoNombre = faker.options().option("Excalibur", "Filo del Infinito", "Devoradora");
-    String nuevaDescripcion = faker.lorem().sentence(4);
-    Integer nuevoDaño = faker.number().numberBetween(100, 500);
+        String nuevoNombre = faker.options().option("Excalibur", "Filo del Infinito", "Devoradora");
+        String nuevaDescripcion = faker.lorem().sentence(4);
+        Integer nuevoDaño = faker.number().numberBetween(100, 500);
 
-    Arma armaConCambios = new Arma();
-    armaConCambios.setNombre(nuevoNombre);
-    armaConCambios.setDescripcion(nuevaDescripcion);
-    armaConCambios.setDañoArma(nuevoDaño);
+        Arma armaConCambios = new Arma();
+        armaConCambios.setNombre(nuevoNombre);
+        armaConCambios.setDescripcion(nuevaDescripcion);
+        armaConCambios.setDañoArma(nuevoDaño);
 
-    when(armaRepository.findById(idExistente)).thenReturn(Optional.of(armaEnBD));
-    when(armaRepository.save(any(Arma.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(armaRepository.findById(idExistente)).thenReturn(Optional.of(armaEnBD));
+        when(armaRepository.save(any(Arma.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    ArmaDTO resultado = armaService.actualizarArma(idExistente, armaConCambios);
+        ArmaDTO resultado = armaService.actualizarArma(idExistente, armaConCambios);
 
-    assertNotNull(resultado, "El objeto actualizado no debería ser nulo");
-    assertEquals(idExistente, resultado.getId(), "El ID debe seguir siendo el mismo");
-    
-    assertEquals(nuevoNombre, resultado.getNombre(), "El nombre debió actualizarse");
-    assertEquals(nuevaDescripcion, resultado.getDescripcion(), "La descripción debió actualizarse");
-    assertEquals(nuevoDaño, resultado.getDañoArma(), "El daño debió actualizarse");
+        assertNotNull(resultado, "El objeto actualizado no debería ser nulo");
+        assertEquals(idExistente, resultado.getId(), "El ID debe seguir siendo el mismo");
+        
+        assertEquals(nuevoNombre, resultado.getNombre(), "El nombre debió actualizarse");
+        assertEquals(nuevaDescripcion, resultado.getDescripcion(), "La descripción debió actualizarse");
+        assertEquals(nuevoDaño, resultado.getDañoArma(), "El daño debió actualizarse");
 
-    verify(armaRepository, times(1)).findById(idExistente);
-    verify(armaRepository, times(1)).save(any(Arma.class));
-    verifyNoMoreInteractions(armaRepository);
-}
-
-
-
+        verify(armaRepository, times(1)).findById(idExistente);
+        verify(armaRepository, times(1)).save(any(Arma.class));
+        verifyNoMoreInteractions(armaRepository);
+    }
 
 }

@@ -34,8 +34,9 @@ public class BolsoPocionesService {
                 .toList();
     }
 
-    public BolsoPociones guardarBolso(BolsoPociones bolso){
-        return bolsoPocionesRepository.save(bolso);
+    public BolsoPocionesDTO guardarBolso(BolsoPociones bolso){
+        BolsoPociones guardado = bolsoPocionesRepository.save(bolso);
+        return convertirADTO(guardado);
     }
 
     public String eliminarBolso(Integer id){

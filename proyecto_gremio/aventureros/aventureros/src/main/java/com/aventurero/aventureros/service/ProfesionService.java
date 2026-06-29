@@ -39,8 +39,9 @@ public class ProfesionService {
         }
     }
 
-    public Profesion guardarProfesion(Profesion profesion){
-        return profesionRepository.save(profesion);
+    public ProfesionDTO guardarProfesion(Profesion profesion){
+        Profesion guardado = profesionRepository.save(profesion);
+        return convertirADTO(guardado);
     }
 
     public Profesion actualizarProfesion(Integer id,Profesion profesion){

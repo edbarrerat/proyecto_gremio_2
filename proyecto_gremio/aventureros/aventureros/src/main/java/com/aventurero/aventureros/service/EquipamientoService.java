@@ -35,8 +35,9 @@ public class EquipamientoService {
                 .toList();
     }
 
-    public Equipamiento guardarEquipamiento(Equipamiento equipamiento){
-        return equipamientoRepository.save(equipamiento);
+    public EquipamientoDTO guardarEquipamiento(Equipamiento equipamiento){
+        Equipamiento guardado = equipamientoRepository.save(equipamiento);
+        return convertirADTO(guardado);
     }
 
     public String eliminarEquipamiento(Integer id){

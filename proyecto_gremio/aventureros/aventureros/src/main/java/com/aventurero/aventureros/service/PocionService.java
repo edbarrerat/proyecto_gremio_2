@@ -30,11 +30,12 @@ public class PocionService {
         return convertirADTO(pocion);
     }
 
-    public Pocion guardarPocion(Pocion pocion){
-        return pocionRepository.save(pocion);
+    public PocionDTO guardarPocion(Pocion pocion){
+        Pocion guardado = pocionRepository.save(pocion);
+        return convertirADTO(guardado);
     }
 
-    public Pocion actualizarPocion(Pocion pocion, Integer id){
+    public PocionDTO actualizarPocion(Pocion pocion, Integer id){
         Pocion poci = pocionRepository.findById(id).orElseThrow(() -> new RuntimeException("La Pocion no está en los registros."));
         if(pocion.getNombre() != null){
             poci.setNombre(pocion.getNombre());
@@ -43,7 +44,8 @@ public class PocionService {
             poci.setDescripcion(pocion.getDescripcion());
         }
 
-        return pocionRepository.save(poci);
+        Pocion actualizada = pocionRepository.save(poci);
+        return convertirADTO(actualizada);
     }
 
     public String eliminarPocion(Integer id){
