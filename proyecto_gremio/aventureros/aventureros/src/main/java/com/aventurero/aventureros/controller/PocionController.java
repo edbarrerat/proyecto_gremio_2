@@ -46,6 +46,7 @@ public class PocionController {
             content = @Content
         )
     })
+
     public ResponseEntity<List<PocionDTO>> todasLasPociones() {
         List<PocionDTO> pociones = pocionService.obtenerTodas();
         if (pociones.isEmpty()) {
@@ -66,6 +67,7 @@ public class PocionController {
             content = @Content
         )
     })
+    
     public ResponseEntity<PocionDTO> buscarPorId(@PathVariable Integer id) {
         try {
             PocionDTO poci = pocionService.buscarPorId(id);
