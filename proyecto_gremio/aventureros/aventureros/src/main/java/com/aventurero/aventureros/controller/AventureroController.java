@@ -92,9 +92,9 @@ public class AventureroController {
             content = @Content
         )
     })
-    public ResponseEntity<Aventurero> agregarAventurero(@RequestBody Aventurero aven) {
+    public ResponseEntity<AventureroDTO> agregarAventurero(@RequestBody Aventurero aven) {
         try {
-            Aventurero guardado = aventureroService.guardarAventurero(aven);
+            AventureroDTO guardado = aventureroService.guardarAventurero(aven);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -113,9 +113,9 @@ public class AventureroController {
             content = @Content
         )
     })
-    public ResponseEntity<Aventurero> actualizarAventurero(@PathVariable Integer id, @RequestBody Aventurero aven){
+    public ResponseEntity<AventureroDTO> actualizarAventurero(@PathVariable Integer id, @RequestBody Aventurero aven){
         try{
-            Aventurero newAven = aventureroService.actualizarAventurero( id, aven);
+            AventureroDTO newAven = aventureroService.actualizarAventurero( id, aven);
             return new ResponseEntity<>(newAven, HttpStatus.OK);
         }catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

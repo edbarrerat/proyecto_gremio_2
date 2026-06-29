@@ -88,9 +88,9 @@ public class EquipamientoController {
             content = @Content
         )
     })
-    public ResponseEntity<Equipamiento> crearBolso(@RequestBody Equipamiento equipamiento){
+    public ResponseEntity<EquipamientoDTO> crearEquipamiento(@RequestBody Equipamiento equipamiento){
         try {
-            Equipamiento guardado = equipamientoService.guardarEquipamiento(equipamiento);
+            EquipamientoDTO guardado = equipamientoService.guardarEquipamiento(equipamiento);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

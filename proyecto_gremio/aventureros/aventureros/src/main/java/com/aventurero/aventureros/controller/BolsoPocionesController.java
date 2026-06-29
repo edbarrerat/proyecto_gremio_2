@@ -90,9 +90,9 @@ public class BolsoPocionesController {
             content = @Content
         )
     })
-    public ResponseEntity<BolsoPociones> crearBolso(@RequestBody BolsoPociones bolso){
+    public ResponseEntity<BolsoPocionesDTO> crearBolso(@RequestBody BolsoPociones bolso){
         try {
-            BolsoPociones guardado = bolsoPocionesService.guardarBolso(bolso);
+            BolsoPocionesDTO guardado = bolsoPocionesService.guardarBolso(bolso);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -86,9 +86,9 @@ public class ProfesionController {
             content = @Content
         )
     })
-    public ResponseEntity<Profesion> agregarProfesion(@RequestBody Profesion prof) {
+    public ResponseEntity<ProfesionDTO> agregarProfesion(@RequestBody Profesion prof) {
         try {
-            Profesion guardado = profesionService.guardarProfesion(prof);
+            ProfesionDTO guardado = profesionService.guardarProfesion(prof);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

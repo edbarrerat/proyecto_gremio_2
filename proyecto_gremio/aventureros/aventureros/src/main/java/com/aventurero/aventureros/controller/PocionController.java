@@ -87,9 +87,9 @@ public class PocionController {
             content = @Content
         )
     })
-    public ResponseEntity<Pocion> agregarPocion(@RequestBody Pocion pocion) {
+    public ResponseEntity<PocionDTO> agregarPocion(@RequestBody Pocion pocion) {
         try {
-            Pocion guardado = pocionService.guardarPocion(pocion);
+            PocionDTO guardado = pocionService.guardarPocion(pocion);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
