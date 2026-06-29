@@ -3,6 +3,7 @@ package com.party.parties.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.party.parties.DTO.PartyDTO;
 import com.party.parties.Model.Party;
 import com.party.parties.Service.PartyService;
+import com.party.parties.assemblers.PartyModelAssembler;
 
 @RestController
 @RequestMapping("/api/v1/parties")
@@ -24,6 +26,9 @@ public class PartyController {
 
     @Autowired
     private PartyService partyService;
+    
+    @Autowired
+    private PartyModelAssembler partyModelAssembler;
 
     @GetMapping
     public ResponseEntity<List<PartyDTO>> listarParties() {
@@ -34,13 +39,9 @@ public class PartyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PartyDTO> buscarPorId(@PathVariable Integer id) {
-        try {
-            PartyDTO party = partyService.buscarPorId(id);
-            return new ResponseEntity<>(party, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<EntityModel<PartyDTO>> buscarPorId(@PathVariable Integer id) {
+        PartyDTO party = partyService.buscarPorId(id);
+        return ResponseEntity.ok(partyModelAssembler.toModel(party));
     }
 
     @PostMapping
