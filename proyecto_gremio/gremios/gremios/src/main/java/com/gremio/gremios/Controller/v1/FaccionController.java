@@ -1,4 +1,4 @@
-package com.gremio.gremios.Controller;
+package com.gremio.gremios.Controller.v1;
 
 import java.util.List;
 
@@ -30,9 +30,9 @@ public class FaccionController {
     @GetMapping
     public ResponseEntity<List<FaccionDTO>> listarFacciones() {
         List<FaccionDTO> facciones = faccionService.obtenerTodos();
-        return facciones.isEmpty() 
-            ? new ResponseEntity<>(HttpStatus.NO_CONTENT) 
-            : new ResponseEntity<>(facciones, HttpStatus.OK);
+        return facciones.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(facciones);
     }
 
     @PostMapping
@@ -53,9 +53,9 @@ public class FaccionController {
     public ResponseEntity<FaccionDTO> actualizarFaccion(
             @PathVariable Integer id, @Valid @RequestBody Faccion faccion) {
         try {
-            return new ResponseEntity(faccionService.actualizarFaccion(id, faccion), HttpStatus.OK);
+            return ResponseEntity.ok(faccionService.actualizarFaccion(id, faccion));
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
