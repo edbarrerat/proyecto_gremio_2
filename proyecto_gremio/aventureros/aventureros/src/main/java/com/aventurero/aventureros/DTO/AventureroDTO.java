@@ -2,10 +2,13 @@ package com.aventurero.aventureros.DTO;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AventureroDTO {
     @Schema(example = "1")
     private Integer id;

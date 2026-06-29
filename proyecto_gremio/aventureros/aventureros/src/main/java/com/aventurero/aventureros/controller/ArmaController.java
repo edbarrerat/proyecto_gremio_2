@@ -1,8 +1,12 @@
 package com.aventurero.aventureros.controller;
 
 import java.util.List;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.aventurero.aventureros.DTO.ArmaDTO;
+import com.aventurero.aventureros.assemblers.ArmaModelAssembler;
 import com.aventurero.aventureros.model.Arma;
 import com.aventurero.aventureros.service.ArmaService;
 
@@ -35,24 +41,32 @@ public class ArmaController {
     @Autowired
     private ArmaService armaService;
 
+    @Autowired
+    private ArmaModelAssembler assembler;
+
     @GetMapping
-    @Operation(summary = "Lista las armas", description = "Obtiene todas las armas creadas y crea una lista de ellas")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200", description = "Operación exitosa, devuelve una lista de las Armas convertidas a formato DTO",
-            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
-        ),
-        @ApiResponse(
-            responseCode = "204", description = "No existen armas creadas, no se encontraron armas",
-            content = @Content
-        )
+    @Operation(summary = "Lista las armas", description = "Obtiene todas las armas creadas.")    @ApiResponses(value = {
+    @ApiResponse(
+        responseCode = "200", description = "Operación exitosa, devuelve una lista de las Armas convertidas a formato DTO",
+        content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ArmaDTO.class))}
+    ),
+    @ApiResponse(
+        responseCode = "204", description = "No existen armas creadas, no se encontraron armas",
+        content = @Content
+    )
     })
-    public ResponseEntity<List<ArmaDTO>> todasLasArmas() {
+    public ResponseEntity<CollectionModel<EntityModel<ArmaDTO>>> todasLasArmas() {
         List<ArmaDTO> armas = armaService.obtenerTodas();
         if (armas.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(armas, HttpStatus.OK);
+        List<EntityModel<ArmaDTO>> armasConLinks = armas.stream()
+                .map(assembler::toModel)
+                .toList();
+        Link linkTodos = linkTo(methodOn(ArmaController.class).todasLasArmas()).withSelfRel();
+        CollectionModel<EntityModel<ArmaDTO>> resultado = CollectionModel.of(armasConLinks, linkTodos);
+
+        return new ResponseEntity<>(resultado, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -67,10 +81,12 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<ArmaDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<EntityModel<ArmaDTO>> buscarPorId(@PathVariable Integer id) {
         try {
             ArmaDTO arm = armaService.buscarPorId(id);
-            return new ResponseEntity<>(arm, HttpStatus.OK);
+            
+            // Como assembler.toModel() devuelve un EntityModel, ahora calza perfecto con la firma
+            return new ResponseEntity<>(assembler.toModel(arm), HttpStatus.OK);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -88,15 +104,14 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<ArmaDTO> agregarArma(@Valid @RequestBody Arma arma) {
+    public ResponseEntity<EntityModel<ArmaDTO>> agregarArma(@Valid @RequestBody Arma arma) {
         try {
             ArmaDTO guardado = armaService.guardarArma(arma);
-            return new ResponseEntity<>(guardado, HttpStatus.CREATED);
+                    return new ResponseEntity<>(assembler.toModel(guardado), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
     @PutMapping("/{id}")
     @Operation(summary = "Actualiza un arma", description = "Busca un arma a través de un ID y actualiza los parámetros nuevos.")
     @ApiResponses(value = {
@@ -113,10 +128,12 @@ public class ArmaController {
             content = @Content
         )
     })
-    public ResponseEntity<ArmaDTO> actualizarArma(@PathVariable Integer id, @RequestBody Arma arm){
+    public ResponseEntity<EntityModel<ArmaDTO>> actualizarArma(@PathVariable Integer id, @RequestBody Arma arm){
         try{
             ArmaDTO newArm = armaService.actualizarArma(id, arm);
-            return new ResponseEntity<>(newArm, HttpStatus.OK);
+            
+            // Ahora calza perfectamente con el EntityModel que retorna tu assembler
+            return new ResponseEntity<>(assembler.toModel(newArm), HttpStatus.OK);
         }catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
