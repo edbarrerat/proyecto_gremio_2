@@ -3,9 +3,14 @@ package com.party.parties.Service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import jakarta.transaction.Transactional;
+import reactor.core.publisher.Mono;
+
+import com.party.parties.DTO.AventureroExternoDTO;
 import com.party.parties.DTO.PartyDTO;
 import com.party.parties.Model.Party;
 import com.party.parties.Repository.PartyRepository;
@@ -17,7 +22,7 @@ public class PartyService {
     private PartyRepository partyRepository;
 
     @Autowired
-    private AventureroRepository aventureroRepository;
+    private WebClient.Builder webClientBuilder;
 
     public List<PartyDTO> obtenerTodas() {
         return partyRepository.findAll().stream()
@@ -35,29 +40,37 @@ public class PartyService {
         return partyRepository.save(party);
     }
 
-    public String añadirAventureroAParty(Integer partyId, Integer aventureroId) {
-        Party party = partyRepository.findById(partyId)
-            .orElseThrow(() -> new RuntimeException("Error: La Party no existe en los registros."));
-        Aventurero aventurero = aventureroRepository.findById(aventureroId)
-            .orElseThrow(() -> new RuntimeException("Error: El aventurero no existe en los registros."));
-        if (aventurero.getParty() != null) {
-            return "Este aventurero ya pertenece a la party: " + aventurero.getParty().getNombre();
+public String añadirAventureroAParty(Integer partyId, Integer aventureroId) {
+        partyRepository.findById(partyId)
+            .orElseThrow(() -> new RuntimeException("Error: La Party no existe en los registros oficiales."));
+            
+        try {
+            return webClientBuilder.build()
+                .put()
+                .uri("http://localhost:8082/api/v1/aventureros/" + aventureroId + "/asignar-party/" + partyId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al comunicarse con aventureros: " + e.getMessage();
         }
-        aventurero.setParty(party); 
-        aventureroRepository.save(aventurero);
-
-        return "El aventurero '" + aventurero.getNombre() + "' se unió a la party: " + party.getNombre();
     }
 
     public String eliminarAventureroDeParty(Integer partyId, Integer aventureroId) {
-        Aventurero aventurero = aventureroRepository.findById(aventureroId)
-            .orElseThrow(() -> new RuntimeException("El aventurero no existe en los registros."));
-        if (aventurero.getParty() != null && aventurero.getParty().getId().equals(partyId)) {
-            aventurero.setParty(null);
-            aventureroRepository.save(aventurero);
-            return "El aventurero ha sido expulsado de la party y ahora trabaja sólo.";
+        partyRepository.findById(partyId)
+            .orElseThrow(() -> new RuntimeException("Error: La Party no existe en los registros oficiales."));
+            
+        try {
+            return webClientBuilder.build()
+                .put()
+                // FALTAN DATOS AQUÍ: Puerto y URI de Aventureros
+                .uri("http://localhost:8082/api/v1/aventureros/" + aventureroId + "/desligar-party")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al comunicarse con aventureros: " + e.getMessage();
         }
-        return "Error: El aventurero no pertenece a esa party, no puedes expulsarlo.";
     }
 
     private PartyDTO convertirADTO(Party party) {
@@ -65,12 +78,30 @@ public class PartyService {
         dto.setId(party.getId());
         dto.setNombre(party.getNombre());
         
-        if (party.getAventureros() != null) {
-            dto.setNombresAventureros(party.getAventureros().stream()
-                                    .map(Aventurero::getNombre)
-                                    .toList());
-        } else {
-            dto.setNombresAventureros(new ArrayList<>());
+        try {
+            // Buscamos la lista de aventureros asociados a esta party comunicándonos con el otro microservicio
+            List<AventureroExternoDTO> aventureros = webClientBuilder.build()
+                .get()
+                // FALTAN DATOS AQUÍ: Puerto y URI de búsqueda por party en Aventureros
+                .uri("http://localhost:8082/api/v1/aventureros/buscar-por-party/" + party.getId())
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty())
+                .bodyToFlux(AventureroExternoDTO.class)
+                .collectList()
+                .block();
+
+            if (aventureros != null && !aventureros.isEmpty()) {
+                // Extraemos solo los nombres para mapearlos como lo tenías originalmente
+                dto.setNombresAventureros(aventureros.stream()
+                    .map(AventureroExternoDTO::getNombre)
+                    .toList());
+            } else {
+                dto.setNombresAventureros(new java.util.ArrayList<>());
+            }
+            
+        } catch (Exception e) {
+            // En caso de que el otro microservicio esté apagado o falle
+            dto.setNombresAventureros(new java.util.ArrayList<>());
         }
         
         return dto;

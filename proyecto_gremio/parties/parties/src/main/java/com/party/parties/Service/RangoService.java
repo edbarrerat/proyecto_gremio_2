@@ -3,6 +3,7 @@ package com.party.parties.Service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.party.parties.DTO.RangoDTO;
 import com.party.parties.Model.Rango;
@@ -16,6 +17,9 @@ public class RangoService {
 
     @Autowired
     private RangoRepository rangoRepository;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     public List<RangoDTO> obtenerTodos() {
         return rangoRepository.findAll().stream().map(this::convertirADTO).toList();

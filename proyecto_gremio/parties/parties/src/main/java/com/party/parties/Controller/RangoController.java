@@ -2,6 +2,7 @@ package com.party.parties.Controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.party.parties.DTO.RangoDTO;
 import com.party.parties.Model.Rango;
 import com.party.parties.Service.RangoService;
+import com.party.parties.assemblers.RangoModelAssembler;
 
 @RestController
 @RequestMapping("/api/v1/rango")
@@ -23,6 +25,9 @@ public class RangoController {
 
     @Autowired
     private RangoService rangoService;
+  
+    @Autowired
+    private RangoModelAssembler rangoModelAssembler;
 
     @GetMapping
     public ResponseEntity<List<RangoDTO>> todosLosRangos() {
@@ -33,15 +38,15 @@ public class RangoController {
         return new ResponseEntity<>(rango, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<RangoDTO> buscarPorId(@PathVariable Integer id) {
-        try {
-            RangoDTO ran = rangoService.buscarPorId(id);
-            return new ResponseEntity<>(ran, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+@GetMapping("/{id}")
+public ResponseEntity<EntityModel<RangoDTO>> buscarPorId(@PathVariable Integer id) {
+    try {
+        RangoDTO ran = rangoService.buscarPorId(id);
+        return ResponseEntity.ok(rangoModelAssembler.toModel(ran));
+    } catch (RuntimeException e) {
+        return ResponseEntity.notFound().build();
     }
+}
 
     @PostMapping
     public ResponseEntity<Rango> agregarRango(@RequestBody Rango ran) {

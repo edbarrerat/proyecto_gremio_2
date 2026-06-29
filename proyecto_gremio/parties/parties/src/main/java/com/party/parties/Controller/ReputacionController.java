@@ -1,7 +1,10 @@
 package com.party.parties.Controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,34 +12,41 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.party.parties.DTO.ReputacionDTO;
 import com.party.parties.Model.Reputacion;
 import com.party.parties.Service.ReputacionService;
+import com.party.parties.assemblers.ReputacionModelAssembler;
 
 @RestController
 @RequestMapping("/api/v1/reputacion")
 public class ReputacionController {
+
     @Autowired
     private ReputacionService reputacionService;
 
+    @Autowired
+    private ReputacionModelAssembler assembler;
+
     @GetMapping
-    public ResponseEntity<List<ReputacionDTO>> todosLosReputacion() {
-        List<ReputacionDTO> reputacion = reputacionService.obtenerTodos();
-        if (reputacion.isEmpty()) {
+    public ResponseEntity<CollectionModel<EntityModel<ReputacionDTO>>> todosLosReputacion() {
+        List<EntityModel<ReputacionDTO>> reputaciones = reputacionService.obtenerTodos().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        if (reputaciones.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(reputacion, HttpStatus.OK);
+        return ResponseEntity.ok(CollectionModel.of(reputaciones));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReputacionDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<EntityModel<ReputacionDTO>> buscarPorId(@PathVariable Integer id) {
         try {
             ReputacionDTO repu = reputacionService.buscarPorId(id);
-            return new ResponseEntity<>(repu, HttpStatus.OK);
+            return ResponseEntity.ok(assembler.toModel(repu));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -73,13 +83,15 @@ public class ReputacionController {
     }
 
     @PutMapping("/{reputacionId}/faccion/{faccionId}")
-    public ResponseEntity<ReputacionDTO> asignarFaccion(
-            @PathVariable Integer reputacionId, 
-            @PathVariable Integer faccionId) {
+    public ResponseEntity<String> asignarFaccion(
+        @PathVariable Integer reputacionId, 
+        @PathVariable Integer faccionId) {
+        try {
+            String mensajeExito = reputacionService.asignarFaccion(reputacionId, faccionId);
             
-        // Llamamos al Service
-        ReputacionDTO reputacionActualizada = reputacionService.asignarFaccion(reputacionId, faccionId);
-        
-        return new ResponseEntity<>(reputacionActualizada, HttpStatus.OK);
+            return new ResponseEntity<>(mensajeExito, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.party.parties.Service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.party.parties.DTO.ReputacionDTO;
 import com.party.parties.Model.Reputacion;
@@ -16,7 +17,9 @@ public class ReputacionService {
     
     @Autowired
     private ReputacionRepository reputacionRepository;
-    private FaccionRepository faccionRepository;
+    
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     public List<ReputacionDTO> obtenerTodos() {
         return reputacionRepository.findAll().stream().map(this::convertirADTO).toList();
@@ -67,16 +70,20 @@ public class ReputacionService {
 
     }
 
-public ReputacionDTO asignarFaccion(Integer reputacionId, Integer faccionId) {
-        Reputacion reputacion = reputacionRepository.findById(reputacionId)
-        .orElseThrow(() -> new RuntimeException("Reputación no encontrada"));
-        
-        Faccion faccion = faccionRepository.findById(faccionId)
-        .orElseThrow(() -> new RuntimeException("Facción no encontrada"));
-        
-        reputacion.setFaccion(faccion);
-        Reputacion guardada = reputacionRepository.save(reputacion);
-        return convertirADTO(guardada);
+    public String asignarFaccion(Integer reputacionId, Integer faccionId) {
+        reputacionRepository.findById(reputacionId)
+            .orElseThrow(() -> new RuntimeException("Error: La Reputación no existe en los registros oficiales."));
+            
+        try {
+            return webClientBuilder.build()
+                .put()
+                .uri("http://localhost:8084/api/v1/facciones/" + faccionId + "/asignar-reputacion/" + reputacionId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        } catch (Exception e) {
+            return "Error al comunicarse con el microservicio de facciones: " + e.getMessage();
+        }
     }
 
     private ReputacionDTO convertirADTO(Reputacion reputacion) {
