@@ -25,7 +25,6 @@ public class RangoService {
         return rangoRepository.findAll().stream().map(this::convertirADTO).toList();
     }
 
-
     public RangoDTO buscarPorId(Integer id){
         Rango rango = rangoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("No existe el rango en sistema."));
@@ -43,17 +42,19 @@ public class RangoService {
         }
     }
 
-    public Rango guardarRango(Rango rango){
-        return rangoRepository.save(rango);
+    // CORREGIDO: Ahora retorna RangoDTO en lugar de la entidad Rango
+    public RangoDTO guardarRango(Rango rango){
+        return convertirADTO(rangoRepository.save(rango));
     }
 
-    public Rango actualizarRango(Integer id, Rango rango){
+    // CORREGIDO: Ahora retorna RangoDTO en lugar de la entidad Rango
+    public RangoDTO actualizarRango(Integer id, Rango rango){
         Rango ran = rangoRepository.findById(id).orElseThrow(() -> new RuntimeException("La reputacion no existe."));
         if(rango.getNivel() != null){
             ran.setNivel(rango.getNivel());
             ran.setNombre(nomRango(rango.getNivel()));
         }
-        return rangoRepository.save(ran);
+        return convertirADTO(rangoRepository.save(ran));
     }
 
     private String nomRango(Integer nivel) {

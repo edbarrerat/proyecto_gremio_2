@@ -1,10 +1,12 @@
 package com.party.parties.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "Entidad que representa el Rango de progresión")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RangoDTO {
     
     @Schema(example = "1")
