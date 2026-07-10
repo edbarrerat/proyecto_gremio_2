@@ -1,11 +1,14 @@
 package com.party.parties.DTO;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "Entidad que representa a una Party o Grupo")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PartyDTO {
     
     @Schema(description = "Identificador único", example = "1")

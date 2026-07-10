@@ -1,11 +1,14 @@
 package com.party.parties.DTO;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "Entidad espejo que representa un Aventurero de otro microservicio")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AventureroExternoDTO {
     
     @Schema(example = "10")

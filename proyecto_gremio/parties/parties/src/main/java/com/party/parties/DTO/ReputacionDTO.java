@@ -1,10 +1,12 @@
 package com.party.parties.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "Entidad que representa la reputación con una facción específica")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReputacionDTO {
     
     @Schema(example = "1")

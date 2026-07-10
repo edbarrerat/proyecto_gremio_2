@@ -2,18 +2,17 @@ package com.party.parties.Controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.party.parties.DTO.ReputacionDTO;
 import com.party.parties.Model.Reputacion;
@@ -22,6 +21,7 @@ import com.party.parties.assemblers.ReputacionModelAssembler;
 
 @RestController
 @RequestMapping("/api/v1/reputacion")
+@Tag(name = "Reputaciones", description = "Operaciones CRUD para la gestión de Reputaciones")
 public class ReputacionController {
 
     @Autowired
@@ -31,6 +31,7 @@ public class ReputacionController {
     private ReputacionModelAssembler assembler;
 
     @GetMapping
+    @Operation(summary = "Listar todas las reputaciones con formato HATEOAS")
     public ResponseEntity<CollectionModel<EntityModel<ReputacionDTO>>> todosLosReputacion() {
         List<EntityModel<ReputacionDTO>> reputaciones = reputacionService.obtenerTodos().stream()
                 .map(assembler::toModel)
@@ -43,6 +44,11 @@ public class ReputacionController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar una reputación por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reputación encontrada exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Reputación no encontrada")
+    })
     public ResponseEntity<EntityModel<ReputacionDTO>> buscarPorId(@PathVariable Integer id) {
         try {
             ReputacionDTO repu = reputacionService.buscarPorId(id);
@@ -53,19 +59,27 @@ public class ReputacionController {
     }
 
     @PostMapping
-    public ResponseEntity<Reputacion> agregarReputacion(@RequestBody Reputacion repu) {
+    @Operation(summary = "Agregar una nueva reputación")
+    public ResponseEntity<ReputacionDTO> agregarReputacion(@Valid @RequestBody Reputacion repu) {
         try {
-            Reputacion guardado = reputacionService.guardarReputacion(repu);
+            ReputacionDTO guardado = reputacionService.guardarReputacion(repu);
             return new ResponseEntity<>(guardado, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    // CORREGIDO: Se integra la anotación @Valid antes del @RequestBody
     @PutMapping("/{id}")
-    public ResponseEntity<Reputacion> actualizarReputacion(@PathVariable Integer id, @RequestBody Reputacion repu){
+    @Operation(summary = "Actualizar una reputación existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reputación actualizada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+        @ApiResponse(responseCode = "404", description = "Reputación no encontrada")
+    })
+    public ResponseEntity<ReputacionDTO> actualizarReputacion(@PathVariable Integer id, @Valid @RequestBody Reputacion repu){
         try{
-            Reputacion newRepu = reputacionService.actualizarReputacion(id, repu);
+            ReputacionDTO newRepu = reputacionService.actualizarReputacion(id, repu);
             return new ResponseEntity<>(newRepu, HttpStatus.OK);
         }catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -73,6 +87,7 @@ public class ReputacionController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar una reputación por su ID")
     public ResponseEntity<String> eliminarReputacion(@PathVariable Integer id) {
         String resultado = reputacionService.eliminar(id);
         if (resultado.contains("exitosamente")) {
@@ -83,12 +98,12 @@ public class ReputacionController {
     }
 
     @PutMapping("/{reputacionId}/faccion/{faccionId}")
+    @Operation(summary = "Asignar facción a una reputación específica")
     public ResponseEntity<String> asignarFaccion(
         @PathVariable Integer reputacionId, 
         @PathVariable Integer faccionId) {
         try {
             String mensajeExito = reputacionService.asignarFaccion(reputacionId, faccionId);
-            
             return new ResponseEntity<>(mensajeExito, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

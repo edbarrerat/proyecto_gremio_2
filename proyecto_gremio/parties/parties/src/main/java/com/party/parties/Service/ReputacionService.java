@@ -25,7 +25,6 @@ public class ReputacionService {
         return reputacionRepository.findAll().stream().map(this::convertirADTO).toList();
     }
 
-
     public ReputacionDTO buscarPorId(Integer id){
         Reputacion reputacion = reputacionRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("No existe la reputacion indicada."));
@@ -43,17 +42,17 @@ public class ReputacionService {
         }
     }
 
-    public Reputacion guardarReputacion(Reputacion reputacion){
-        return reputacionRepository.save(reputacion);
+    public ReputacionDTO guardarReputacion(Reputacion reputacion){
+        return convertirADTO(reputacionRepository.save(reputacion));
     }
 
-    public Reputacion actualizarReputacion(Integer id,Reputacion reputacion){
+    public ReputacionDTO actualizarReputacion(Integer id, Reputacion reputacion){
         Reputacion repu = reputacionRepository.findById(id).orElseThrow(() -> new RuntimeException("La reputacion no existe."));
         if(reputacion.getNivel() != null){
             repu.setNivel(reputacion.getNivel());
             repu.setNombre(nomReputacion(reputacion.getNivel()));
         }
-        return reputacionRepository.save(repu);
+        return convertirADTO(reputacionRepository.save(repu));
     }
 
     private String nomReputacion(Integer nivel) {
@@ -67,9 +66,9 @@ public class ReputacionService {
             return "Amistoso";
         else
             return "Benevolente";
-
     }
 
+    
     public String asignarFaccion(Integer reputacionId, Integer faccionId) {
         reputacionRepository.findById(reputacionId)
             .orElseThrow(() -> new RuntimeException("Error: La Reputación no existe en los registros oficiales."));
@@ -77,7 +76,7 @@ public class ReputacionService {
         try {
             return webClientBuilder.build()
                 .put()
-                .uri("http://localhost:8084/api/v1/facciones/" + faccionId + "/asignar-reputacion/" + reputacionId)
+                .uri("http://gremios/api/v1/facciones/" + faccionId + "/asignar-reputacion/" + reputacionId)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
@@ -93,5 +92,4 @@ public class ReputacionService {
         dto.setNivel(reputacion.getNivel());
         return dto;
     }
-
 }
