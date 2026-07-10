@@ -9,9 +9,9 @@ services:
    environment:
      MYSQL_ROOT_PASSWORD: ""
      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-     MYSQL_DATABASE: db_imperio_jedis_dev
+     MYSQL_DATABASE: db_proyecto_gremio_dev
    networks:
-     - network-jedi
+     - network-gremio
    healthcheck:
      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root"]
      interval: 10s
@@ -25,7 +25,7 @@ services:
    ports:
      - "8761:8761"
    networks:
-     - network-jedi
+     - network-gremio
    healthcheck:
      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
      interval: 15s
@@ -43,22 +43,22 @@ services:
      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
      SPRING_PROFILES_ACTIVE: dev
    networks:
-     - network-jedi
+     - network-gremio
    depends_on:
      eureka-server:
        condition: service_healthy
 
 
- jedis-service:
-   build: ./jedis
-   container_name: jedis-service
+ aventureros-service:
+   build: ./aventureros
+   container_name: aventureros-service
    environment:
      SPRING_PROFILES_ACTIVE: dev
      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
      DATABASE_HOST: mariadb-db
      GATEWAY_URL: http://localhost:8080
    networks:
-     - network-jedi
+     - network-gremio
    depends_on:
      mariadb-db:
        condition: service_healthy
@@ -66,23 +66,39 @@ services:
        condition: service_healthy
 
 
- sables-service:
-   build: ./sables
-   container_name: sables-service
+ parties-service:
+   build: ./parties
+   container_name: parties-service
    environment:
      SPRING_PROFILES_ACTIVE: dev
      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
      DATABASE_HOST: mariadb-db
      GATEWAY_URL: http://localhost:8080
    networks:
-     - network-jedi
+     - network-gremio
    depends_on:
      mariadb-db:
        condition: service_healthy
      eureka-server:
        condition: service_healthy
+
+gremios-service:
+  build: ./gremios
+  container_name: gremios-service
+  environment:
+    SPRING_PROFILES_ACTIVE: dev
+    EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    DATABASE_HOST: mariadb-db
+    GATEWAY_URL: http://localhost:8080
+  networks:
+    - network-gremio
+  depends_on:
+    mariadb-db:
+      condition: service_healthy
+    eureka-server:
+      condition: service_healthy
 
 
 networks:
- network-jedi:
+ network-gremio:
    driver: bridge
